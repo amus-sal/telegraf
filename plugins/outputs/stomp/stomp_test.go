@@ -10,7 +10,7 @@ import (
 )
 
 // TestiConnectAndWrite ...
-func TestiConnectAndWrite(t *testing.T) {
+func TestConnectAndWrite(t *testing.T) {
 	if testing.Short() {
 		t.Skip("Skipping integration test in short mode")
 	}
