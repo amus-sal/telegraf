@@ -1,6 +1,7 @@
 package stomp
 
 import (
+	ts "crypto/tls"
 	"net"
 
 	"github.com/go-stomp/stomp"
@@ -28,9 +29,9 @@ type STOMP struct {
 func (q *STOMP) Connect() error {
 	var err error
 	if q.SSL == true {
-		tlsCongi, _ := q.ClientConfig.TLSConfig()
+		tlsConfig, _ := q.ClientConfig.TLSConfig()
 
-		q.Conn, err = tls.Dial("tcp", q.Host, tlsCongi)
+		q.Conn, err = ts.Dial("tcp", q.Host, tlsConfig)
 
 		q.Stomp, err = stomp.Connect(q.Conn, stomp.ConnOpt.HeartBeat(0, 0), stomp.ConnOpt.Login(q.Username, q.Password))
 	} else {
