@@ -12,11 +12,11 @@ import (
 
 //STOMP ...
 type STOMP struct {
-	Host               string `toml:"host"`
-	Username           string `toml:"username,omitempty"`
-	Password           string `toml:"password,omitempty"`
-	QueueName          string `toml:"queueName"`
-	SSL                bool   `toml:"ssl"`
+	Host      string `toml:"host"`
+	Username  string `toml:"username,omitempty"`
+	Password  string `toml:"password,omitempty"`
+	QueueName string `toml:"queueName"`
+	SSL       bool   `toml:"ssl"`
 	tls.ClientConfig
 	Conn      *tls.Conn
 	NetConn   net.Conn
@@ -27,7 +27,6 @@ type STOMP struct {
 //Connect ...
 func (q *STOMP) Connect() error {
 	var err error
-	var tlsCongi 
 	if q.SSL == true {
 		tlsCongi, _ := q.ClientConfig.TLSConfig()
 
