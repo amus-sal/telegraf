@@ -67,7 +67,6 @@ func (q *STOMP) Write(metrics []telegraf.Metric) error {
 		err = q.Stomp.Send(q.QueueName, "text/plain",
 			[]byte(values), nil)
 		if err != nil {
-			panic(err)
 			return err
 		}
 	}
