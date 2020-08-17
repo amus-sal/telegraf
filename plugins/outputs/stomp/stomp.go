@@ -19,7 +19,7 @@ type STOMP struct {
 	QueueName string `toml:"queueName"`
 	SSL       bool   `toml:"ssl"`
 	tls.ClientConfig
-	Conn      *tls.Conn
+	Conn      *ts.Conn
 	NetConn   net.Conn
 	Stomp     *stomp.Conn
 	serialize serializers.Serializer
