@@ -28,10 +28,8 @@ type STOMP struct {
 
 //Connect ...
 func (q *STOMP) Connect() error {
-	var err error
-	var tlsConfig *tls.Config
 	if q.SSL == true {
-		tlsConfig, err = q.ClientConfig.TLSConfig()
+		tlsConfig, err := q.ClientConfig.TLSConfig()
 		if err != nil {
 			return err
 		}
