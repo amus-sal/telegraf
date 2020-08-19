@@ -42,6 +42,7 @@ func (q *STOMP) Connect() error {
 			return err
 		}
 	} else {
+		var err error
 		q.NetConn, err = net.Dial("tcp", q.Host)
 		if err != nil {
 			return err
