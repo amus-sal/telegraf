@@ -23,32 +23,39 @@ type STOMP struct {
 	NetConn   net.Conn
 	Stomp     *stomp.Conn
 	serialize serializers.Serializer
+	Log       telegraf.Logger `toml:"-"`
 }
 
 //Connect ...
 func (q *STOMP) Connect() error {
 	var err error
+	var tlsConfig *tls.Config
 	if q.SSL == true {
-		tlsConfig, _ := q.ClientConfig.TLSConfig()
-
+		tlsConfig, err = q.ClientConfig.TLSConfig()
+		if err != nil {
+			return err
+		}
 		q.Conn, err = ts.Dial("tcp", q.Host, tlsConfig)
-
+		if err != nil {
+			return err
+		}
 		q.Stomp, err = stomp.Connect(q.Conn, stomp.ConnOpt.HeartBeat(0, 0), stomp.ConnOpt.Login(q.Username, q.Password))
+		if err != nil {
+			return err
+		}
 	} else {
 		q.NetConn, err = net.Dial("tcp", q.Host)
+		if err != nil {
+			return err
+		}
 		q.Stomp, err = stomp.Connect(q.NetConn, stomp.ConnOpt.HeartBeat(0, 0), stomp.ConnOpt.Login(q.Username, q.Password))
+		if err != nil {
+			return err
+		}
 
 	}
-	if err != nil {
-		println("cannot connect to server", err.Error())
-		return err
-	}
 
-	if err != nil {
-		println(err.Error())
-		return err
-	}
-	println("STOMP Connected...")
+	q.Log.Info("STOMP Connected...")
 	return nil
 }
 
@@ -75,15 +82,50 @@ func (q *STOMP) Write(metrics []telegraf.Metric) error {
 
 //Close ...
 func (q *STOMP) Close() error {
-	println("Closiong is starting .....")
-	q.Stomp.Disconnect()
-	q.Conn.Close()
+	var err error
+	err = q.Stomp.Disconnect()
+	if err != nil {
+		return err
+	}
+	err = q.Conn.Close()
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
 //SampleConfig ...
 func (q *STOMP) SampleConfig() string {
-	return `ok = true`
+	return `
+[[outputs.STOMP]]
+	## Host of Active Mq broker
+    	host = "localhost:61613"
+
+	## Queue name for producer messages
+    	queueName = "telegraf"
+
+
+	## Optional username and password if Required to connect Active MQ server.
+    	username = ""
+    	password = ""
+
+
+  	## Default No TLS Connecton 
+    	# SSL = false
+
+  	## Optional TLS Config
+    	# SSL = true
+    	# tls_ca = "/etc/telegraf/ca.pem"
+    	# tls_cert = "/etc/telegraf/cert.pem"
+    	# tls_key = "/etc/telegraf/key.pem"
+    ## Use TLS but skip chain & host verification
+    	# insecure_skip_verify = false
+
+
+
+	## Data format to output.
+    	# data_format = "json"
+`
 }
 
 //Description ...
